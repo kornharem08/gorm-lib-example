@@ -28,6 +28,7 @@ func main() {
 	handler := userhandler.NewHandler(conn)
 	r := gin.Default()
 	r.GET("/users", handler.Find)
+	r.GET("/users/:employeeId", handler.FindByEmployeeId)
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	// // Start a new session (transaction)

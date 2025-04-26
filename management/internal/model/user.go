@@ -1,13 +1,15 @@
 package model
 
-import "time"
-
 type User struct {
-	ID        uint `gorm:"primarykey"`
-	Name      string
-	Email     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Contactid      string `json:"Contactid" gorm:"column:Contactid"`
+	ADUserId       string `json:"ADUserId" gorm:"column:ADUserId"`
+	EmployeeId     string `json:"EmployeeId" gorm:"column:EmployeeId"`
+	FirstName      string `json:"FirstName" gorm:"column:FirstName"`
+	LastName       string `json:"LastName" gorm:"column:LastName"`
+	LocalFirstName string `json:"LocalFirstName" gorm:"column:LocalFirstName"`
+	LocalLastName  string `json:"LocalLastName" gorm:"column:LocalLastName"`
+	EmployeeTag    string `json:"EmployeeTag" gorm:"column:EmployeeTag"`
+	CompanyCode    string `json:"CompanyCode" gorm:"column:CompanyCode"`
 }
 
 func (User) TableName() string {

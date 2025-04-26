@@ -44,6 +44,36 @@ func (_m *IService) Find(ctx context.Context) ([]model.User, error) {
 	return r0, r1
 }
 
+// FindByEmployeeId provides a mock function with given fields: ctx, employeeId
+func (_m *IService) FindByEmployeeId(ctx context.Context, employeeId string) (*model.User, error) {
+	ret := _m.Called(ctx, employeeId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindByEmployeeId")
+	}
+
+	var r0 *model.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*model.User, error)); ok {
+		return rf(ctx, employeeId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *model.User); ok {
+		r0 = rf(ctx, employeeId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, employeeId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewIService creates a new instance of IService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewIService(t interface {

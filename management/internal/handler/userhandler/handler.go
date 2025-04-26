@@ -26,3 +26,24 @@ func (h IHandler) Find(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": users})
 }
+
+func (h IHandler) FindByEmployeeId(c *gin.Context) {
+	employeeId := c.Param("employeeId")
+	if employeeId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "employee ID is required"})
+		return
+	}
+
+	user, err := h.UserService.FindByEmployeeId(c.Request.Context(), employeeId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if user == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": user})
+}

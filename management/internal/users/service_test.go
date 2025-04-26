@@ -70,8 +70,8 @@ func TestService_Find(t *testing.T) {
 		beforeEach()
 		// Setup mock to return users
 		expectedResponse = []model.User{
-			{ID: 1, Name: "Test User", Email: "test@example.com"},
-			{ID: 2, Name: "Another User", Email: "another@example.com"},
+			{Contactid: "C0123456789", ADUserId: "AD123456789", EmployeeId: "E123456789", FirstName: "John", LastName: "Doe", LocalFirstName: "De", LocalLastName: "Dad", EmployeeTag: "CONTRACTOR"},
+			{Contactid: "C0234567890", ADUserId: "AD234567890", EmployeeId: "E234567890", FirstName: "May", LastName: "Fah", LocalFirstName: "Ma", LocalLastName: "Loi", EmployeeTag: "STAFF"},
 		}
 
 		result, err := service.Find(ctx)
@@ -79,8 +79,8 @@ func TestService_Find(t *testing.T) {
 		// Assertions
 		assert.NoError(t, err)
 		assert.Len(t, result, 2)
-		assert.Equal(t, uint(1), result[0].ID)
-		assert.Equal(t, "Test User", result[0].Name)
+		assert.Equal(t, "C0123456789", result[0].Contactid)
+		assert.Equal(t, "John", result[0].FirstName)
 
 		mockRepository.AssertExpectations(t)
 	})
@@ -95,6 +95,78 @@ func TestService_Find(t *testing.T) {
 		// Assertions
 		assert.Error(t, err)
 		assert.Empty(t, result)
+		assert.Equal(t, mockError, err)
+
+		mockRepository.AssertExpectations(t)
+	})
+}
+
+func TestService_FindByEmployeeId(t *testing.T) {
+	var (
+		mockRepository   *mocks.IRepository
+		service          *users.Service
+		ctx              context.Context
+		expectedResponse *model.User
+		mockError        error
+		employeeId       string
+	)
+
+	beforeEach := func() {
+		mockRepository = new(mocks.IRepository)
+		mockError = nil
+		ctx = context.Background()
+		employeeId = "E123456789"
+		service = &users.Service{
+			Repository: mockRepository,
+		}
+		expectedResponse = nil
+
+		mockRepository.On("FindByEmployeeId", context.Background(), employeeId).Return(
+			func(ctx context.Context, empId string) *model.User {
+				return expectedResponse
+			},
+			func(ctx context.Context, empId string) error {
+				return mockError
+			},
+		)
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		beforeEach()
+		// Setup mock to return user
+		expectedResponse = &model.User{
+			Contactid:      "C0123456789",
+			ADUserId:       "AD123456789",
+			EmployeeId:     "E123456789",
+			FirstName:      "John",
+			LastName:       "Doe",
+			LocalFirstName: "De",
+			LocalLastName:  "Dad",
+			EmployeeTag:    "CONTRACTOR",
+		}
+
+		result, err := service.FindByEmployeeId(ctx, employeeId)
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, "C0123456789", result.Contactid)
+		assert.Equal(t, "John", result.FirstName)
+		assert.Equal(t, "E123456789", result.EmployeeId)
+
+		mockRepository.AssertExpectations(t)
+	})
+
+	// Error case
+	t.Run("Repository Error", func(t *testing.T) {
+		beforeEach()
+		mockError = errors.New("user not found")
+
+		result, err := service.FindByEmployeeId(ctx, employeeId)
+
+		// Assertions
+		assert.Error(t, err)
+		assert.Nil(t, result)
 		assert.Equal(t, mockError, err)
 
 		mockRepository.AssertExpectations(t)
